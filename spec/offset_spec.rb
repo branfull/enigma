@@ -31,4 +31,11 @@ RSpec.describe Offset do
       expect(offset.last_four).to eq("1025")
     end
   end
+  describe '#create_hash_keys' do
+    offset = Offset.new('040895')
+    it 'creates an array of keys to be used for a hash' do
+      expected = ['offset_a', 'offset_b', 'offset_c', 'offset_d']
+      expect(offset.create_hash_keys(offset)).to eq(expected)
+    end
+  end
 end
