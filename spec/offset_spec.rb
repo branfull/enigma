@@ -8,6 +8,7 @@ RSpec.describe Offset do
     end
   end
   describe '#date_as_integer' do
+    offset = Offset.new('040895')
     it 'converts the date from a string to an integer' do
       expect(offset.date_as_integer).to eq(40895)
     end
