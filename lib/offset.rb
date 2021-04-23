@@ -10,4 +10,8 @@ class Offset
   def date_squared
     date_as_integer**2
   end
+
+  def date_squared_as_string
+    date_squared.to_s
+  end
 end
