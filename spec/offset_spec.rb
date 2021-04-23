@@ -25,4 +25,10 @@ RSpec.describe Offset do
       expect(offset.date_squared_as_string).to eq("1672401025")
     end
   end
+  describe '#last_four' do
+    offset = Offset.new('040895')
+    it 'returns the last four digits of the squared date as a string' do
+      expect(offset.last_four).to eq("1025")
+    end
+  end
 end
