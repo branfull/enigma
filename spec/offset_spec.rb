@@ -19,4 +19,9 @@ RSpec.describe Offset do
       expect(offset.date_squared).to eq(1_672_401_025)
     end
   end
+  describe '#date_squared_as_string' do
+    it 'returns the date squared as a string' do
+      expect(offset.date_squared_as_string).to eq("1672401025")
+    end
+  end
 end
