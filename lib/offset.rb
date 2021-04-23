@@ -6,4 +6,8 @@ class Offset
   def date_as_integer
     @date_str.to_i
   end
+
+  def date_squared
+    date_as_integer**2
+  end
 end
