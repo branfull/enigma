@@ -14,4 +14,8 @@ class Offset
   def date_squared_as_string
     date_squared.to_s
   end
+
+  def last_four
+    date_squared_as_string.slice(-4..-1)
+  end
 end
