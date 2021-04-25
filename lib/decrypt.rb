@@ -15,7 +15,7 @@ def output
   key_used = hash[:key]
   date_used = hash[:date]
   encrypted_file = File.open(ARGV[1], 'w')
-  encrypted_file.write(hash[:encryption])
+  encrypted_file.write(hash[:decryption])
   encrypted_file.close
   "Created #{ARGV[1]} with the key #{key_used} and date #{date_used}"
 end

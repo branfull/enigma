@@ -75,7 +75,15 @@ class Enigma
       end
     end.join('')
     # binding.pry
-    { encryption: encrypted_message, date: date, key: key }
+    { decryption: encrypted_message, date: date, key: key }
+  end
+
+  def to_double_digit(string)
+    if string.length < 2
+      string.prepend('0')
+    else
+      string
+    end
   end
 
   def crack(message, date = today_ddmmyy)
@@ -96,27 +104,52 @@ class Enigma
     bad_var_name = start_point.flat_map do |(first, last)|
       first - last
     end
+
     four_by_four = []
     bad_var_name.each do |starter|
-      array = [starter.to_s]
+      array = [to_double_digit(starter.to_s)]
       sum = starter
       while sum + 27 < 99
         sum += 27
-        array.push(sum.to_s)
+        array.push(to_double_digit(sum.to_s))
       end
       four_by_four.push(array)
     end
-    parts = four_by_four.map do |number_array|
-      number_array.map do |sub_array|
-        sub_array.split('')
+    first = four_by_four[0]
+    second = four_by_four[1]
+    third = four_by_four[2]
+    fourth = four_by_four[3]
+    index_of_a = 0
+    a = first[index_of_a]
+    b = second[0]
+    c = third[0]
+    d = fourth[0]
+    until a[1] == b[0] && b[1] == c[0] && c[1] == d[0]
+      b = second.find do |second_element|
+        second_element[0] == a[1]
+      end
+      if b.nil?
+        index_of_a += 1
+        a = first[index_of_a]
+      else
+        c = third.find do |third_element|
+          third_element[0] == b[1]
+        end
+        if c.nil?
+          index_of_a += 1
+          a = first[index_of_a]
+        else
+          d = fourth.find do |fourth_element|
+            fourth_element[0] == c[1]
+          end
+          if d.nil?
+            index_of_a += 1
+            a = first[index_of_a]
+          end
+        end
       end
     end
-    a = four_by_four[0][0]
-    b = four_by_four[1][0]
-    c = four_by_four[2][0]
-    d = four_by_four[3][0]
-    binding.pry
-    # date_offset = crack_offset.last_four.rotate(message_length_mod)
-    # ' ' > 26, e > 4, n > 13, d > 3
+    encryption_key = "#{a}#{b[1]}#{c[1]}#{d[1]}"
+    super_hash = decrypt(message, encryption_key, date)
   end
 end
