@@ -1,6 +1,4 @@
 require 'date'
-require_relative 'offset'
-require_relative 'cipher_key'
 require 'pry'
 
 class Enigma
@@ -11,12 +9,26 @@ class Enigma
     ('a'..'z').to_a.push(' ')
   end
 
+  def four_cipher_keys(key)
+    a, b, c, d = key.slice(0..1),
+    key.slice(1..2),
+    key.slice(2..3),
+    key.slice(3..4)
+    [a.to_i, b.to_i, c.to_i, d.to_i]
+  end
+
+  def last_four(date)
+    date_squared = date.to_i**2
+    date_squared_as_string = date_squared.to_s
+    string = date_squared_as_string.slice(-4..-1)
+    array = string.split('')
+    array.map do |number|
+      number.to_i
+    end
+  end
+
   def offset_and_key(key, date)
-    cipher_key = CipherKey.new(key)
-    a_d_keys = cipher_key.four_cipher_keys
-    offset = Offset.new(date)
-    a_d_offsets = offset.last_four
-    zipped = a_d_keys.zip(a_d_offsets)
+    zipped = four_cipher_keys(key).zip(last_four(date))
     zipped.flat_map do |(zipped_key, zipped_offset)|
       zipped_key + zipped_offset
     end
@@ -55,7 +67,6 @@ class Enigma
       end
     end.join('')
     { encryption: encrypted_message, date: date, key: key }
-    # binding.pry
   end
 
   def decrypt(message, key, date = today_ddmmyy)
@@ -74,7 +85,6 @@ class Enigma
         characters.rotate(rotate_number)[0]
       end
     end.join('')
-    # binding.pry
     { decryption: encrypted_message, date: date, key: key }
   end
 

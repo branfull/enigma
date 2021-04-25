@@ -13,6 +13,17 @@ RSpec.describe Enigma do
       expect(enigma.characters[0]).to eq('a')
     end
   end
+  describe 'four_cipher_keys' do
+    it 'creates an array of the cipher_keys' do
+      expected = [2, 27, 71, 15]
+      expect(enigma.four_cipher_keys('02715')).to eq(expected)
+    end
+  end
+  describe '#last_four' do
+    it 'returns the last four digits of the squared date as a string' do
+      expect(enigma.last_four('040895')).to eq([1, 0, 2, 5])
+    end
+  end
   describe '#encrypt' do
     it 'returns a hash with encryption, key, and date' do
       actual = enigma.encrypt('hello world', '02715', '040895')
@@ -51,7 +62,6 @@ RSpec.describe Enigma do
         key: '43912',
         date: '042521'
       }
-      require 'pry'; binding.pry
       expect(actual).to eq(expected)
       expect(actual2).to eq(expected2)
       expect(actual3).to eq(expected3)
