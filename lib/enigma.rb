@@ -58,7 +58,7 @@ class Enigma
     # binding.pry
   end
 
-  def decrypt(message, key = random_key, date)
+  def decrypt(message, key, date = today_ddmmyy)
     # generate a-d keys
     downcased_message = message.downcase
     modify = offset_and_key(key, date)
@@ -76,5 +76,47 @@ class Enigma
     end.join('')
     # binding.pry
     { encryption: encrypted_message, date: date, key: key }
+  end
+
+  def crack(message, date = today_ddmmyy)
+    message_length_mod = message.length % 4
+    message_end = message.slice(-4..-1).split('')
+    last_chars = [26, 4, 13, 3]
+    message_end_index = message_end.map do |letter|
+      characters.index(letter)
+    end
+    match_end = message_end_index.zip(last_chars)
+    jumps = match_end.flat_map do |(cipher_text, end_text)|
+      (cipher_text + 27 - end_text) % 27
+    end
+    crack_offset = Offset.new(date)
+    date_offset = crack_offset.last_four
+    wip_keys = jumps.rotate(-message_length_mod)
+    start_point = wip_keys.zip(date_offset)
+    bad_var_name = start_point.flat_map do |(first, last)|
+      first - last
+    end
+    four_by_four = []
+    bad_var_name.each do |starter|
+      array = [starter.to_s]
+      sum = starter
+      while sum + 27 < 99
+        sum += 27
+        array.push(sum.to_s)
+      end
+      four_by_four.push(array)
+    end
+    parts = four_by_four.map do |number_array|
+      number_array.map do |sub_array|
+        sub_array.split('')
+      end
+    end
+    a = four_by_four[0][0]
+    b = four_by_four[1][0]
+    c = four_by_four[2][0]
+    d = four_by_four[3][0]
+    binding.pry
+    # date_offset = crack_offset.last_four.rotate(message_length_mod)
+    # ' ' > 26, e > 4, n > 13, d > 3
   end
 end

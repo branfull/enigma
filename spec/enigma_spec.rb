@@ -35,6 +35,7 @@ RSpec.describe Enigma do
     it 'returns a hash with encryption, key, and date' do
       actual = enigma.decrypt('keder ohulw', '02715', '040895')
       actual2 = enigma.decrypt('Keder ohulw!', '02715', '040895')
+      actual3 = enigma.decrypt('yszyenjahzrmvar', '43912', '042421')
       expected = {
         encryption: 'hello world',
         key: '02715',
@@ -45,8 +46,15 @@ RSpec.describe Enigma do
         key: '02715',
         date: '040895'
       }
+      expected3 = {
+        encryption: 'hello world end',
+        key: '43912',
+        date: '042421'
+      }
+      require 'pry'; binding.pry
       expect(actual).to eq(expected)
       expect(actual2).to eq(expected2)
+      expect(actual3).to eq(expected3)
     end
   end
 end
