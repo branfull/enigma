@@ -3,19 +3,21 @@ class Offset
     @date_str = date_str
   end
 
-  def date_as_integer
-    @date_str.to_i
-  end
+  # def date_as_integer
+  #   @date_str.to_i
+  # end
+  #
+  # def date_squared
+  #   date_as_integer**2
+  # end
 
-  def date_squared
-    date_as_integer**2
-  end
-
-  def date_squared_as_string
-    date_squared.to_s
-  end
+  # def date_squared_as_string
+  #   date_squared.to_s
+  # end
 
   def last_four
+    date_squared = @date_str.to_i**2
+    date_squared_as_string = date_squared.to_s
     string = date_squared_as_string.slice(-4..-1)
     array = string.split('')
     array.map do |number|

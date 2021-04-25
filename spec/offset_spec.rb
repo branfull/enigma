@@ -7,21 +7,21 @@ RSpec.describe Offset do
       expect(offset).to be_an_instance_of(Offset)
     end
   end
-  describe '#date_as_integer' do
-    it 'converts the date from a string to an integer' do
-      expect(offset.date_as_integer).to eq(40_895)
-    end
-  end
-  describe '#date_squared' do
-    it 'squares the date' do
-      expect(offset.date_squared).to eq(1_672_401_025)
-    end
-  end
-  describe '#date_squared_as_string' do
-    it 'returns the date squared as a string' do
-      expect(offset.date_squared_as_string).to eq("1672401025")
-    end
-  end
+  # describe '#date_as_integer' do
+  #   it 'converts the date from a string to an integer' do
+  #     expect(offset.date_as_integer).to eq(40_895)
+  #   end
+  # end
+  # describe '#date_squared' do
+  #   it 'squares the date' do
+  #     expect(offset.date_squared).to eq(1_672_401_025)
+  #   end
+  # end
+  # describe '#date_squared_as_string' do
+  #   it 'returns the date squared as a string' do
+  #     expect(offset.date_squared_as_string).to eq("1672401025")
+  #   end
+  # end
   describe '#last_four' do
     it 'returns the last four digits of the squared date as a string' do
       expect(offset.last_four).to eq([1, 0, 2, 5])
