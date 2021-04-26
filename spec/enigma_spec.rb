@@ -19,9 +19,9 @@ RSpec.describe Enigma do
       expect(enigma.four_cipher_keys('02715')).to eq(expected)
     end
   end
-  describe '#last_four' do
+  describe '#offset_from_date' do
     it 'returns the last four digits of the squared date as a string' do
-      expect(enigma.last_four('040895')).to eq([1, 0, 2, 5])
+      expect(enigma.offset_from_date('040895')).to eq([1, 0, 2, 5])
     end
   end
   describe '#encrypt' do
