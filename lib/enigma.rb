@@ -1,4 +1,5 @@
 require 'date'
+require 'pry'
 
 class Enigma
   def initialize
@@ -27,17 +28,18 @@ class Enigma
   end
 
   def offset_and_key(key, date)
-    zipped = four_cipher_keys(key).zip(offset_from_date(date))
-    zipped.flat_map do |(zipped_key, zipped_offset)|
+    key_offset_pairs = four_cipher_keys(key).zip(offset_from_date(date))
+    key_offset_pairs.flat_map do |(zipped_key, zipped_offset)|
       zipped_key + zipped_offset
     end
   end
 
   def today_ddmmyy
     today = Date.today
-    today.to_s.split('-').rotate(1).map do |element|
+    date_components = today.to_s.split('-')
+    date_components.map do |element|
       element[-2..-1]
-    end.join
+    end.reverse.join
   end
 
   def random_key
@@ -85,8 +87,14 @@ class Enigma
     end
   end
 
+  def character_count(message)
+    message.split('').count do |letter|
+      characters.include?(letter)
+    end
+  end
+
   def crack(message, date = today_ddmmyy)
-    message_length_mod = message.length % 4
+    message_length_mod = character_count(message) % 4
     message_end = message.slice(-4..-1).split('')
     last_chars = [26, 4, 13, 3]
     message_end_index = message_end.map do |letter|
@@ -96,10 +104,8 @@ class Enigma
     jumps = match_end.flat_map do |(cipher_text, end_text)|
       (cipher_text + 27 - end_text) % 27
     end
-    crack_offset = Offset.new(date)
-    date_offset = crack_offset.offset_from_date
     wip_keys = jumps.rotate(-message_length_mod)
-    start_point = wip_keys.zip(date_offset)
+    start_point = wip_keys.zip(offset_from_date(date))
     bad_var_name = start_point.flat_map do |(first, last)|
       first - last
     end
