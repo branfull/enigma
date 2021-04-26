@@ -9,12 +9,17 @@ class Enigma
     ('a'..'z').to_a.push(' ')
   end
 
-  def four_cipher_keys(key)
-    a, b, c, d = key.slice(0..1),
-    key.slice(1..2),
-    key.slice(2..3),
-    key.slice(3..4)
-    [a.to_i, b.to_i, c.to_i, d.to_i]
+  def rotated_character(rotate_by)
+    rotate_all_characters = characters.rotate(rotate_by)
+    rotate_all_characters[0]
+  end
+
+  def four_cipher_keys(cipher_key)
+    first, second, third, fourth = cipher_key.slice(0..1),
+    cipher_key.slice(1..2),
+    cipher_key.slice(2..3),
+    cipher_key.slice(3..4)
+    [first.to_i, second.to_i, third.to_i, fourth.to_i]
   end
 
   def offset_from_date(date)
@@ -52,7 +57,7 @@ class Enigma
   end
 
   def manipulate(operator, message, key, date)
-    modify = offset_and_key(key, date)
+    modify_by = offset_and_key(key, date)
     individual_chars = message.downcase.split('')
     message_index = 0
     individual_chars.map do |letter|
@@ -61,10 +66,10 @@ class Enigma
         letter
       else
         character_index =characters.index(individual_chars[message_index])
-        key_offset_sum = modify[message_index % 4]
-        rotate_number = character_index.send(operator, key_offset_sum)
+        cipher_key_offset_sum = modify_by[message_index % 4]
+        rotate_number = character_index.send(operator, cipher_key_offset_sum)
         message_index += 1
-        characters.rotate(rotate_number)[0]
+        rotated_character(rotate_number)
       end
     end.join('')
   end

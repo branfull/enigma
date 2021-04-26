@@ -13,6 +13,11 @@ RSpec.describe Enigma do
       expect(enigma.characters[0]).to eq('a')
     end
   end
+  describe '#rotated_character' do
+    it 'returns a charachter that has been rotated by a given number' do
+      expect(enigma.rotated_character(4)).to eq('e')
+    end
+  end
   describe 'four_cipher_keys' do
     it 'creates an array of the cipher_keys' do
       expected = [2, 27, 71, 15]
