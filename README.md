@@ -14,6 +14,6 @@ Test Driven Development: 2.5 - 3
   a few tests. There were a couple of times early on where I got ahead of myself in
   writing methods rather than using tests. It especially got out of hand as I
   was tinkering through #crack. Because of the complexity of my #crack method,
-  I have 96% coverage.
+  I have 98% coverage.
 
-Version Control: 42 commits
+Version Control: 43 commits

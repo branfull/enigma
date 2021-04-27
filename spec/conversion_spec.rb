@@ -1,3 +1,4 @@
+require_relative 'spec_helper'
 require './lib/conversion'
 
 RSpec.describe Conversion do
