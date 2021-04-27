@@ -1,6 +1,4 @@
 require 'date'
-require_relative 'offset'
-require_relative 'cipher_key'
 require_relative 'enigma'
 require 'pry'
 

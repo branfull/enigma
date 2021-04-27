@@ -159,15 +159,48 @@ RSpec.describe Enigma do
       expect(enigma.variation_from_original_message('maar')).to eq(expected)
     end
   end
+  describe '#ordered_variation' do
+    it 'returns an array of the variation in abcd order' do
+      expected = [23, 14, 14, 13]
+      expect(enigma.ordered_variation('dszyknjanzrmaar')).to eq(expected)
+    end
+  end
+  describe '#variation_less_offset' do
+    it 'returns an array of the variation in abcd order' do
+      actual = enigma.variation_less_offset('dszyknjanzrmaar', '250421')
+      expected = [16, 12, 10, 12]
+      expect(actual).to eq(expected)
+    end
+  end
+  describe '#cipher_hash' do
+    it 'returns an array of arrays of all possible cipher keys' do
+      actual = enigma.cipher_hash('dszyknjanzrmaar', '250421')
+      expected = {
+        first: ["16", "43", "70", "97"],
+        second: ["12", "39", "66", "93"],
+        third: ["10", "37", "64", "91"],
+        fourth: ["12", "39", "66", "93"]
+      }
+      expect(actual).to eq(expected)
+    end
+  end
   describe '#crack' do
     it 'decrypts the message without being given a key' do
       actual = enigma.crack('dszyknjanzrmaar', '250421')
+      allow(Date).to receive(:today).and_return(Date.new(2021, 04, 27))
+      actual2 = enigma.crack('rsdxyno azwloaw')
       expected = {
         decryption: 'hello world end',
         key: '43912',
         date: '250421'
       }
+      expected2 = {
+        decryption: 'hello world end',
+        key: '03965',
+        date: '270421'
+      }
       expect(actual).to eq(expected)
+      expect(actual2).to eq(expected2)
     end
   end
 end
