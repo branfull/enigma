@@ -1,4 +1,6 @@
+require_relative 'spec_helper'
 require './lib/enigma'
+require 'pry'
 
 RSpec.describe Enigma do
   enigma = Enigma.new
@@ -61,6 +63,10 @@ RSpec.describe Enigma do
       actual = enigma.encrypt('hello world', '02715', '040895')
       actual2 = enigma.encrypt('Hello world!', '02715', '040895')
       actual3 = enigma.encrypt('Hello world end', '43912', '250421')
+      allow(Date).to receive(:today).and_return(Date.new(2021, 02, 25))
+      actual4 = enigma.encrypt('Hello world end', '43912')
+      allow(enigma).to receive(:random_key).and_return('28432')
+      actual5 = enigma.encrypt('Hello world end')
       expected = {
         encryption: 'keder ohulw',
         key: '02715',
@@ -76,9 +82,21 @@ RSpec.describe Enigma do
         key: '43912',
         date: '250421'
       }
+      expected4 = {
+        encryption: 'eyzyltjaoermbgr',
+        key: '43912',
+        date: '250221'
+      }
+      expected5 = {
+        encryption: 'qperxkpu wxfnyx',
+        key: '28432',
+        date: '250221'
+      }
       expect(actual).to eq(expected)
       expect(actual2).to eq(expected2)
       expect(actual3).to eq(expected3)
+      expect(actual4).to eq(expected4)
+      expect(actual5).to eq(expected5)
     end
   end
   describe '#decrypt' do
@@ -86,6 +104,8 @@ RSpec.describe Enigma do
       actual = enigma.decrypt('keder ohulw', '02715', '040895')
       actual2 = enigma.decrypt('Keder ohulw!', '02715', '040895')
       actual3 = enigma.decrypt('dszyknjanzrmaar', '43912', '250421')
+      allow(Date).to receive(:today).and_return(Date.new(2021, 02, 25))
+      actual4 = enigma.decrypt('eyzyltjaoermbgr', '43912')
       expected = {
         decryption: 'hello world',
         key: '02715',
@@ -101,9 +121,15 @@ RSpec.describe Enigma do
         key: '43912',
         date: '250421'
       }
+      expected4 = {
+        decryption: 'hello world end',
+        key: '43912',
+        date: '250221'
+      }
       expect(actual).to eq(expected)
       expect(actual2).to eq(expected2)
       expect(actual3).to eq(expected3)
+      expect(actual4).to eq(expected4)
     end
   end
   describe '#to_double_digit' do
@@ -114,6 +140,23 @@ RSpec.describe Enigma do
   describe '#character_count' do
     it 'determines the number of letters and spaces in a message' do
       expect(enigma.character_count('hello, world!')).to eq(11)
+    end
+  end
+  describe '#last_four_of_message' do
+    it 'returns the last four characters of a message' do
+      expected = [' ','e', 'n', 'd']
+      expect(enigma.last_four_of_message('hello world end')).to eq(expected)
+    end
+  end
+  describe '#index_of_last_four' do
+    it 'returns the index of the character array for each of the last 4' do
+      expect(enigma.index_of_last_four(' end')).to eq([26, 4, 13, 3])
+    end
+  end
+  describe '#variation_from_original_message' do
+    it 'returns the variation between indexes of original and encrypted' do
+      expected = [13, 23, 14, 14]
+      expect(enigma.variation_from_original_message('maar')).to eq(expected)
     end
   end
   describe '#crack' do
