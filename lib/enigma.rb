@@ -65,7 +65,7 @@ class Enigma
         message_index += 1
         letter
       else
-        character_index =characters.index(individual_chars[message_index])
+        character_index = characters.index(individual_chars[message_index])
         cipher_key_offset_sum = modify_by[message_index % 4]
         rotate_number = character_index.send(operator, cipher_key_offset_sum)
         message_index += 1
@@ -98,17 +98,29 @@ class Enigma
     end
   end
 
-  def crack(message, date = today_ddmmyy)
-    message_length_mod = character_count(message) % 4
-    message_end = message.slice(-4..-1).split('')
-    last_chars = [26, 4, 13, 3]
-    message_end_index = message_end.map do |letter|
+  def last_four_of_message(message)
+    message.slice(-4..-1).split('')
+  end
+
+  def index_of_last_four(message)
+    last_four_of_message(message).map do |letter|
       characters.index(letter)
     end
-    match_end = message_end_index.zip(last_chars)
+  end
+
+  def variation_from_original_message(message)
+    combined_ends = index_of_last_four(message).zip(index_of_last_four(' end'))
+    combined_ends.flat_map do |(cipher_text, end_text)|
+      (cipher_text + 27 - end_text) % 27
+    end
+  end
+
+  def crack(message, date = today_ddmmyy)
+    match_end = index_of_last_four(message).zip(index_of_last_four(' end'))
     jumps = match_end.flat_map do |(cipher_text, end_text)|
       (cipher_text + 27 - end_text) % 27
     end
+    message_length_mod = character_count(message) % 4
     wip_keys = jumps.rotate(-message_length_mod)
     start_point = wip_keys.zip(offset_from_date(date))
     bad_var_name = start_point.flat_map do |(first, last)|
