@@ -115,62 +115,68 @@ class Enigma
     end
   end
 
-  def crack(message, date = today_ddmmyy)
-    match_end = index_of_last_four(message).zip(index_of_last_four(' end'))
-    jumps = match_end.flat_map do |(cipher_text, end_text)|
-      (cipher_text + 27 - end_text) % 27
-    end
+  def ordered_variation(message)
     message_length_mod = character_count(message) % 4
-    wip_keys = jumps.rotate(-message_length_mod)
-    start_point = wip_keys.zip(offset_from_date(date))
-    bad_var_name = start_point.flat_map do |(first, last)|
-      first - last
+    variation_from_original_message(message).rotate(-message_length_mod)
+  end
+
+  def variation_less_offset(message, date)
+    variation_offset = ordered_variation(message).zip(offset_from_date(date))
+    variation_offset.flat_map do |(variation, offset)|
+      variation - offset
     end
+  end
+
+  def cipher_hash(message, date)
     four_by_four = []
-    bad_var_name.each do |starter|
-      array = [to_double_digit(starter.to_s)]
-      sum = starter
-      while sum + 27 < 99
-        sum += 27
-        array.push(to_double_digit(sum.to_s))
+    possible_cipher_key_names = [:first, :second, :third, :fourth]
+    variation_less_offset(message, date).each do |minimum_possible_key|
+      all_possible_keys = [to_double_digit(minimum_possible_key.to_s)]
+      next_possible_key = minimum_possible_key
+      while next_possible_key + 27 < 99
+        next_possible_key += 27
+        all_possible_keys.push(to_double_digit(next_possible_key.to_s))
       end
-      four_by_four.push(array)
+      four_by_four.push(all_possible_keys)
     end
-    first = four_by_four[0]
-    second = four_by_four[1]
-    third = four_by_four[2]
-    fourth = four_by_four[3]
-    index_of_a = 0
-    a = first[index_of_a]
-    b = second[0]
-    c = third[0]
-    d = fourth[0]
-    until (a[1] == b[0] && b[1] == c[0] && c[1] == d[0]) || index_of_a > 4
-      b = second.find do |second_element|
-        second_element[0] == a[1]
+    possible_cipher_key_names.zip(four_by_four).to_h
+  end
+
+  def crack(message, date = today_ddmmyy)
+    index_of_first = 0
+    first = cipher_hash(message, date)[:first][index_of_first]
+    second = cipher_hash(message, date)[:second][0]
+    third = cipher_hash(message, date)[:third][0]
+    fourth = cipher_hash(message, date)[:fourth][0]
+    until ((first[1] == second[0] &&
+      second[1] == third[0] &&
+      third[1] == fourth[0]) ||
+      index_of_first > 4)
+      second = cipher_hash(message, date)[:second].find do |second_element|
+        second_element[0] ==first[1]
       end
-      if b.nil?
-        index_of_a += 1
-        a = first[index_of_a]
+      if second.nil?
+        index_of_first += 1
+        first = cipher_hash(message, date)[:first][index_of_first]
       else
-        c = third.find do |third_element|
-          third_element[0] == b[1]
+        third = cipher_hash(message, date)[:third].find do |third_element|
+          third_element[0] == second[1]
         end
-        if c.nil?
-          index_of_a += 1
-          a = first[index_of_a]
+        if third.nil?
+          index_of_first += 1
+          first = cipher_hash(message, date)[:first][index_of_first]
         else
-          d = fourth.find do |fourth_element|
-            fourth_element[0] == c[1]
+          fourth = cipher_hash(message, date)[:fourth].find do |fourth_element|
+            fourth_element[0] == third[1]
           end
-          if d.nil?
-            index_of_a += 1
-            a = first[index_of_a]
+          if fourth.nil?
+            index_of_first += 1
+            first = cipher_hash(message, date)[:first][index_of_first]
           end
         end
       end
     end
-    encryption_key = "#{a}#{b[1]}#{c[1]}#{d[1]}"
-    super_hash = decrypt(message, encryption_key, date)
+    encryption_key = "#{first}#{second[1]}#{third[1]}#{fourth[1]}"
+    decrypt(message, encryption_key, date)
   end
 end
