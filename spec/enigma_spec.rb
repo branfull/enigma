@@ -27,7 +27,7 @@ RSpec.describe Enigma do
       actual = enigma.manipulate(:+, 'hello world', '02715', '040895')
       expected = 'keder ohulw'
       expect(actual).to eq(expected)
-      actual2 = enigma.manipulate(:-, 'keder ohulw', '02715', '040895')
+      actual2 = enigmarspe.manipulate(:-, 'keder ohulw', '02715', '040895')
       expected2 = 'hello world'
       expect(actual2).to eq(expected2)
     end
