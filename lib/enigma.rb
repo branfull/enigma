@@ -1,35 +1,26 @@
 require 'date'
 require_relative 'conversion'
-require 'pry'
 
 class Enigma
   def initialize
   end
 
-  def characters
-    ('a'..'z').to_a.push(' ')
-  end
-
-  def rotated_character(rotate_by)
-    rotate_all_characters = characters.rotate(rotate_by)
-    rotate_all_characters[0]
-  end
-
   def manipulate(operator, message, key, date)
     conversion = Conversion.new
+    text = Message.new
     modify_by = conversion.offset_and_key(key, date)
     individual_chars = message.downcase.split('')
     message_index = 0
     individual_chars.map do |letter|
-      if !characters.include?(letter)
+      if !text.letter_included?(letter)
         message_index += 1
         letter
       else
-        character_index = characters.index(individual_chars[message_index])
+        character_index = text.characters.index(individual_chars[message_index])
         cipher_key_offset_sum = modify_by[message_index % 4]
         rotate_number = character_index.send(operator, cipher_key_offset_sum)
         message_index += 1
-        rotated_character(rotate_number)
+        text.rotated_character(rotate_number)
       end
     end.join('')
   end
@@ -52,37 +43,10 @@ class Enigma
     end
   end
 
-  def character_count(message)
-    message.split('').count do |letter|
-      characters.include?(letter)
-    end
-  end
-
-  def last_four_of_message(message)
-    message.slice(-4..-1).split('')
-  end
-
-  def index_of_last_four(message)
-    last_four_of_message(message).map do |letter|
-      characters.index(letter)
-    end
-  end
-
-  def variation_from_original_message(message)
-    combined_ends = index_of_last_four(message).zip(index_of_last_four(' end'))
-    combined_ends.flat_map do |(cipher_text, end_text)|
-      (cipher_text + 27 - end_text) % 27
-    end
-  end
-
-  def ordered_variation(message)
-    message_length_mod = character_count(message) % 4
-    variation_from_original_message(message).rotate(-message_length_mod)
-  end
-
   def variation_less_offset(message, date)
     conversion = Conversion.new
-    variation_offset = ordered_variation(message).zip(conversion.offset_from_date(date))
+    text = Message.new
+    variation_offset = text.ordered_variation(message).zip(conversion.offset_from_date(date))
     variation_offset.flat_map do |(variation, offset)|
       variation - offset
     end

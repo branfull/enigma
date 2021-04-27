@@ -1,7 +1,6 @@
 require_relative 'spec_helper'
 require './lib/enigma'
 require './lib/conversion'
-require 'pry'
 
 RSpec.describe Enigma do
   enigma = Enigma.new
@@ -11,23 +10,12 @@ RSpec.describe Enigma do
       expect(enigma).to be_an_instance_of(Enigma)
     end
   end
-  describe '#characters' do
-    it 'returns a list of all lower case letters and space' do
-      expect(enigma.characters[26]).to eq(' ')
-      expect(enigma.characters[0]).to eq('a')
-    end
-  end
-  describe '#rotated_character' do
-    it 'returns a charachter that has been rotated by a given number' do
-      expect(enigma.rotated_character(4)).to eq('e')
-    end
-  end
   describe '#manipulate' do
     it 'encrypts or decrypts a message based on the operator argument' do
       actual = enigma.manipulate(:+, 'hello world', '02715', '040895')
       expected = 'keder ohulw'
       expect(actual).to eq(expected)
-      actual2 = enigmarspe.manipulate(:-, 'keder ohulw', '02715', '040895')
+      actual2 = enigma.manipulate(:-, 'keder ohulw', '02715', '040895')
       expected2 = 'hello world'
       expect(actual2).to eq(expected2)
     end
@@ -109,34 +97,6 @@ RSpec.describe Enigma do
   describe '#to_double_digit' do
     it 'ensures a string is a double digit number' do
       expect(enigma.to_double_digit('4')).to eq('04')
-    end
-  end
-  describe '#character_count' do
-    it 'determines the number of letters and spaces in a message' do
-      expect(enigma.character_count('hello, world!')).to eq(11)
-    end
-  end
-  describe '#last_four_of_message' do
-    it 'returns the last four characters of a message' do
-      expected = [' ','e', 'n', 'd']
-      expect(enigma.last_four_of_message('hello world end')).to eq(expected)
-    end
-  end
-  describe '#index_of_last_four' do
-    it 'returns the index of the character array for each of the last 4' do
-      expect(enigma.index_of_last_four(' end')).to eq([26, 4, 13, 3])
-    end
-  end
-  describe '#variation_from_original_message' do
-    it 'returns the variation between indexes of original and encrypted' do
-      expected = [13, 23, 14, 14]
-      expect(enigma.variation_from_original_message('maar')).to eq(expected)
-    end
-  end
-  describe '#ordered_variation' do
-    it 'returns an array of the variation in abcd order' do
-      expected = [23, 14, 14, 13]
-      expect(enigma.ordered_variation('dszyknjanzrmaar')).to eq(expected)
     end
   end
   describe '#variation_less_offset' do
