@@ -1,4 +1,5 @@
 require 'date'
+require_relative 'conversion'
 require 'pry'
 
 class Enigma
@@ -14,50 +15,9 @@ class Enigma
     rotate_all_characters[0]
   end
 
-  def four_cipher_keys(cipher_key)
-    first, second, third, fourth = cipher_key.slice(0..1),
-    cipher_key.slice(1..2),
-    cipher_key.slice(2..3),
-    cipher_key.slice(3..4)
-    [first.to_i, second.to_i, third.to_i, fourth.to_i]
-  end
-
-  def offset_from_date(date)
-    date_squared = date.to_i**2
-    date_squared_as_string = date_squared.to_s
-    last_four_integer = date_squared_as_string.slice(-4..-1)
-    last_four_digits = last_four_integer.split('')
-    last_four_digits.map do |digit|
-      digit.to_i
-    end
-  end
-
-  def offset_and_key(key, date)
-    key_offset_pairs = four_cipher_keys(key).zip(offset_from_date(date))
-    key_offset_pairs.flat_map do |(zipped_key, zipped_offset)|
-      zipped_key + zipped_offset
-    end
-  end
-
-  def today_ddmmyy
-    today = Date.today
-    date_components = today.to_s.split('-')
-    date_components.map do |element|
-      element[-2..-1]
-    end.reverse.join
-  end
-
-  def random_key
-    numbers = ('0'..'9').to_a
-    key = ''
-    5.times do
-      key += numbers.sample
-    end
-    key
-  end
-
   def manipulate(operator, message, key, date)
-    modify_by = offset_and_key(key, date)
+    conversion = Conversion.new
+    modify_by = conversion.offset_and_key(key, date)
     individual_chars = message.downcase.split('')
     message_index = 0
     individual_chars.map do |letter|
@@ -74,12 +34,12 @@ class Enigma
     end.join('')
   end
 
-  def encrypt(message, key = random_key, date = today_ddmmyy)
+  def encrypt(message, key = Conversion.random_key, date = Conversion.today_ddmmyy)
     manipulated_message = manipulate(:+, message, key, date)
     { encryption: manipulated_message, date: date, key: key }
   end
 
-  def decrypt(message, key, date = today_ddmmyy)
+  def decrypt(message, key, date = Conversion.today_ddmmyy)
     manipulated_message = manipulate(:-, message, key, date)
     { decryption: manipulated_message, date: date, key: key }
   end
@@ -121,7 +81,8 @@ class Enigma
   end
 
   def variation_less_offset(message, date)
-    variation_offset = ordered_variation(message).zip(offset_from_date(date))
+    conversion = Conversion.new
+    variation_offset = ordered_variation(message).zip(conversion.offset_from_date(date))
     variation_offset.flat_map do |(variation, offset)|
       variation - offset
     end
@@ -142,7 +103,7 @@ class Enigma
     possible_cipher_key_names.zip(four_by_four).to_h
   end
 
-  def crack(message, date = today_ddmmyy)
+  def crack(message, date = Conversion.today_ddmmyy)
     index_of_first = 0
     first = cipher_hash(message, date)[:first][index_of_first]
     second = cipher_hash(message, date)[:second][0]

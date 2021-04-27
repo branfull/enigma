@@ -1,9 +1,11 @@
 require_relative 'spec_helper'
 require './lib/enigma'
+require './lib/conversion'
 require 'pry'
 
 RSpec.describe Enigma do
   enigma = Enigma.new
+  conversion = Conversion.new
   describe '#initialize' do
     it 'exists' do
       expect(enigma).to be_an_instance_of(Enigma)
@@ -20,40 +22,12 @@ RSpec.describe Enigma do
       expect(enigma.rotated_character(4)).to eq('e')
     end
   end
-  describe 'four_cipher_keys' do
-    it 'creates an array of the cipher_keys' do
-      expected = [2, 27, 71, 15]
-      expect(enigma.four_cipher_keys('02715')).to eq(expected)
-    end
-  end
-  describe '#offset_from_date' do
-    it 'returns the last four digits of the squared date as a string' do
-      expect(enigma.offset_from_date('040895')).to eq([1, 0, 2, 5])
-    end
-  end
-  describe '#offset_and_key' do
-    it 'adds the offset and keys together' do
-      expect(enigma.offset_and_key('02715', '040895')).to eq([3, 27, 73, 20])
-    end
-  end
-  describe '#today_ddmmyy' do
-    it 'returns today\'s date in ddmmyy format' do
-      allow(Date).to receive(:today).and_return(Date.new(2021, 04, 25))
-      expect(enigma.today_ddmmyy).to eq('250421')
-    end
-  end
-  describe '#random_key' do
-    it 'creates a string of 5 random digits' do
-      expect(enigma.random_key.length).to eq(5)
-      expect(enigma.random_key).to be_an_instance_of(String)
-    end
-  end
   describe '#manipulate' do
     it 'encrypts or decrypts a message based on the operator argument' do
       actual = enigma.manipulate(:+, 'hello world', '02715', '040895')
       expected = 'keder ohulw'
       expect(actual).to eq(expected)
-      actual2 = enigma.manipulate(:-, 'keder ohulw', '02715', '040895')
+      actual2 = enigmarspe.manipulate(:-, 'keder ohulw', '02715', '040895')
       expected2 = 'hello world'
       expect(actual2).to eq(expected2)
     end
@@ -65,7 +39,7 @@ RSpec.describe Enigma do
       actual3 = enigma.encrypt('Hello world end', '43912', '250421')
       allow(Date).to receive(:today).and_return(Date.new(2021, 02, 25))
       actual4 = enigma.encrypt('Hello world end', '43912')
-      allow(enigma).to receive(:random_key).and_return('28432')
+      allow(Conversion).to receive(:random_key).and_return('28432')
       actual5 = enigma.encrypt('Hello world end')
       expected = {
         encryption: 'keder ohulw',
